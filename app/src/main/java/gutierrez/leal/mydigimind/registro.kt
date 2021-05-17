@@ -2,17 +2,19 @@ package gutierrez.leal.mydigimind
 
 import android.R.attr
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.auth.FirebaseAuth
 
 
 class registro : AppCompatActivity() {
 
     private var mAuth: FirebaseAuth? = null
-
+    private lateinit var db: FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class registro : AppCompatActivity() {
 
             if (contra1 == contra2){
 
+                registrarDataBaseFirebase(correo,contra1)
                 registrarFirebase(correo, contra1)
 
             }else{
@@ -68,6 +71,22 @@ class registro : AppCompatActivity() {
                         //updateUI(null)
                     }
                 }
+    }
+
+    private fun registrarDataBaseFirebase(email: String, password: String) {
+        var user = hashMapOf(
+            "email" to email.toString(),
+            "clave" to password.toString()
+        )
+        db.collection("usuarios")
+            .add(user)
+            .addOnSuccessListener { documentReference ->
+                Log.d( "${documentReference.id}","Usuario Agregado!")
+            }
+            .addOnFailureListener { e ->
+                Log.w( "Error adding document", e)
+            }
+
     }
 
 }
